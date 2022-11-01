@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'components/Guide.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -30,17 +32,43 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    MediaQueryData queryData;
+    queryData = MediaQuery.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+        child: Container(
+            decoration: BoxDecoration(border: Border.all(width: 1,color:Colors.black)),
+            constraints: const BoxConstraints(minWidth: 250, minHeight: 400),
+            height:queryData.size.height,
+            width: queryData.size.width,
+            child:Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(border: Border.all(width: 1)),
+                  height:60,
+                  child: Container(),
+                ),
+                Expanded(child: Guide.getBorderedWidget(ListView(
+                  children: [
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
+                    ListTile(title: Text("ABC" , style: TextStyle(fontSize: 24.0),),),
 
-          ],
-        ),
+                  ],
+                )))
+              ],
+            )),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){},
