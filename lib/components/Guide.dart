@@ -19,6 +19,7 @@ class Guide{
     return Container(
       width:width,
       height:height,
+      margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
           border:Border.all(
               width:1,
@@ -28,6 +29,7 @@ class Guide{
       child: w,
     );
   }
+  
 
 
   static ListView getDummyListView(){

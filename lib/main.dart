@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
       ),
       body: Center(
         child: Container(
-            constraints: const BoxConstraints(minWidth: 250, minHeight: 400),
+            constraints: const BoxConstraints(minWidth: 250, minHeight: 400, maxWidth: 500),
             height:queryData.size.height,
             width: queryData.size.width,
             child:Column(
