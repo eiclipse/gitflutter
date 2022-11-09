@@ -68,26 +68,115 @@ class TabViewFactory with ChangeNotifier{
       children: [
         Expanded(         // From box
           flex:30,
-          child: Center(
-              child: FractionallySizedBox(
-                heightFactor: 0.95,
-                widthFactor: 0.95,
-                child: Column(
+          child: FractionallySizedBox(
+            heightFactor: 0.95,
+            widthFactor: 0.95,
+            child: Column(
+              children: [
+                Expanded(
+                    flex:2,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(width: 1,color:Colors.grey)
+                          )
+                      ),
+                      child: Stack(
+                        children: const [
+                          Positioned(
+                              left:3,
+                              bottom:3,
+                              child: Text("번역 할 메세지 입력",style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color:Colors.black,
+                                fontSize: 16
+                              ),)
+                          )
+                        ],
+                      ),
+                    )
+                ),
+                Expanded(
+                    flex:8,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+                      child: TextField(
+                        decoration: InputDecoration(
+                            hintText: "Input english for translate to korean"
+                        ),
+                        controller: _fromMessageController,
+                        style: TextStyle(fontSize: 16),
+                        maxLines: 20,
+                      ),
+                    )
+                )
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          flex:10,
+          child: Container(
+            decoration: const BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(width: 1, color: Colors.grey)
+                )
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(onPressed: (){
+                  if(_fromMessageController.text.trim()==""){
+                    _fromMessageController.text="";
+                    return;
+                  }
+
+                  print(_fromMessageController.text);
+
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+                  if (!currentFocus.hasPrimaryFocus) {
+                    currentFocus.unfocus();
+                  }
+                  Future<dynamic> result = PapagoAPI.translateRequest(_fromMessageController.text);
+                  result.then((value) => data.papagoResult=value);
+                  data.papagoBeforeText = _fromMessageController.text;
+                  _fromMessageController.text="";
+                }, child: Text("Translate")),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          flex:30,
+          child: FractionallySizedBox(
+              heightFactor: 0.95,
+              widthFactor: 0.95,
+              child:Column(
                   children: [
                     Expanded(
                         flex:2,
                         child: Container(
                           decoration: const BoxDecoration(
                               border: Border(
-                                  bottom: BorderSide(width: 1,color:Colors.grey)
+                                  bottom:BorderSide(
+                                      width: 1,
+                                      color:Colors.blueAccent
+                                  )
                               )
                           ),
                           child: Stack(
                             children: const [
                               Positioned(
-                                  left:3,
-                                  bottom:3,
-                                  child: Text("번역 할 메세지 입력",)
+                                left:3,
+                                bottom:3,
+                                child: Text("번역 요청 한 문장",
+                                  style:TextStyle(
+                                      fontSize: 16,
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.blueAccent
+                                  ),
+                                )
+                                ,
                               )
                             ],
                           ),
@@ -95,152 +184,70 @@ class TabViewFactory with ChangeNotifier{
                     ),
                     Expanded(
                         flex:8,
-                        child: Center(
-                          child: TextField(
-                            decoration: InputDecoration(
-                                hintText: "Input english for translate to korean"
-                            ),
-                            controller: _fromMessageController,
-                            style: TextStyle(fontSize: 20),
-                            maxLines: 20,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(data.papagoBeforeText,overflow: TextOverflow.visible),
+                              )
                           ),
                         )
                     )
-                  ],
-                ),
-              )
-          ),
-        ),
-        Expanded(
-          flex:10,
-          child: Center(
-              child: Container(
-                decoration: const BoxDecoration(
-                    border: Border(
-                        top: BorderSide(width: 1, color: Colors.grey),
-                        bottom: BorderSide(width: 1, color: Colors.grey)
-                    )
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(onPressed: (){
-
-                      if(_fromMessageController.text==""){
-
-                        return;
-                      }
-
-                      FocusScopeNode currentFocus = FocusScope.of(context);
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      Future<dynamic> result = PapagoAPI.translateRequest(_fromMessageController.text);
-                      result.then((value) => data.papagoResult=value);
-                      data.papagoBeforeText = _fromMessageController.text;
-                      _fromMessageController.text="";
-                    }, child: Text("Translate")),
-                  ],
-                ),
-              )
-          ),
-        ),
-        Expanded(
-          flex:30,
-          child: Center(
-              child: FractionallySizedBox(
-                  heightFactor: 0.95,
-                  widthFactor: 0.95,
-                  child:Column(
-                      children: [
-                        Expanded(
-                            flex:2,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      bottom:BorderSide(
-                                          width: 1,
-                                          color:Colors.blueAccent
-                                      )
-                                  )
-                              ),
-                              child: Stack(
-                                children: const [
-                                  Positioned(
-                                    left:3,
-                                    bottom:3,
-                                    child: Text("번역 요청 한 문장",
-                                      style:TextStyle(
-                                          fontSize: 14,
-                                          fontStyle: FontStyle.italic,
-                                          color: Colors.blueAccent
-                                      ),
-                                    )
-                                    ,
-                                  )
-                                ],
-                              ),
-                            )
-                        ),
-                        Expanded(
-                            flex:8,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child: Text(data.papagoBeforeText,overflow: TextOverflow.visible),
-                            )
-                        )
-                      ]
-                  )
+                  ]
               )
           ),
         ),
         Expanded(         // to Box
           flex: 30,
-          child: Center(
-              child: FractionallySizedBox(
-                  heightFactor: 0.95,
-                  widthFactor: 0.95,
-                  child:Column(
-                      children: [
-                        Expanded(
-                            flex:2,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          width: 1,
-                                          color:Colors.pink
-                                      )
+          child: FractionallySizedBox(
+              heightFactor: 0.95,
+              widthFactor: 0.95,
+              child:Column(
+                  children: [
+                    Expanded(
+                        flex:2,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      width: 1,
+                                      color:Colors.pink
                                   )
-                              ),
-                              child: Stack(
-                                children: const [
-                                  Positioned(
-                                      left:3,
-                                      bottom:3,
-                                      child: Text("번역 완료된 문장",
-                                        style:TextStyle(
-                                            fontSize: 14,
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.pink
-                                        ),
-                                      )
+                              )
+                          ),
+                          child: Stack(
+                            children: const [
+                              Positioned(
+                                  left:3,
+                                  bottom:3,
+                                  child: Text("번역 완료된 문장",
+                                    style:TextStyle(
+                                        fontSize: 16,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.pink
+                                    ),
                                   )
-                                ],
-                              ),
-                            )
-                        ),
-                        Expanded(
-                            flex:8,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child:Text(data.papagoResult,overflow: TextOverflow.visible),
-                            )
+                              )
+                            ],
+                          ),
                         )
-                      ]
-                  )
+                    ),
+                    Expanded(
+                        flex:8,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(data.papagoResult,overflow: TextOverflow.visible,textAlign: TextAlign.start,),
+                              )
+                          ),
+                        )
+                    )
+                  ]
               )
           ),
         ),

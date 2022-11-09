@@ -21,9 +21,14 @@ class PapagoAPI{
         body: "source=en&target=ko&text="+text,
         encoding: Encoding.getByName("utf8")
     );
+
     Map<String,dynamic> result = jsonDecode(resp.body);
-    String tmsg = "${result['message']['result']['translatedText']}";
-    return tmsg;
+    try {
+      String tmsg = "${result['message']['result']['translatedText']}";
+      return tmsg;
+    }on NoSuchMethodError{
+      return "일일 사용량이 초과되어 번역 서비스를 사용할 수 없습니다.";
+    }
   }
 
 }
