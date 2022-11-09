@@ -1,5 +1,8 @@
+import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:gitpractice01/providers/MainActivityProvider.dart';
 import 'package:gitpractice01/ui/main/TabViewFactory.dart';
+import 'package:provider/provider.dart';
 
 import 'components/Guide.dart';
 
@@ -12,13 +15,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (BuildContext context) => MainAcitivityProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const MyHomePage(title: 'Flutter App Practice'),
       ),
-      home: const MyHomePage(title: 'Flutter App Practice'),
     );
   }
 }
@@ -31,19 +39,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
+  final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
+  TabController? _tabController;
 
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+        length: 5,
+        vsync: this
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     MediaQueryData queryData;
     queryData = MediaQuery.of(context);
 
-    var tabController = TabController(
-        length: 5,
-        vsync: this
-    );
+    double screenWidth = queryData.size.width;
+    double screenHeight = queryData.size.height;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text(widget.title),
@@ -63,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                       width: queryData.size.width,
                       child: TabBar(
                         physics: BouncingScrollPhysics(),
-                        controller: tabController,
+                        controller: _tabController,
                         isScrollable: true, // Required
                         labelColor: Colors.white,
                         unselectedLabelColor: Colors.grey, // Other tabs color
@@ -74,8 +91,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                           insets: EdgeInsets.symmetric(horizontal: 48), // Indicator width
                         ),
                         tabs: [
-                          Tab(text: 'Total'),
-                          Tab(text: 'Your'),
+                          Tab(text: 'UI'),
+                          Tab(text: 'PapagoAPI'),
                           Tab(text: 'Current'),
                           Tab(text: 'Earnings'),
                           Tab(text: 'Balance'),
@@ -85,10 +102,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                 ),
                 Expanded(child: TabBarView(
                   physics: NeverScrollableScrollPhysics(),
-                  controller: tabController,
+                  controller: _tabController,
                   children: [
-                    Guide.getBorderedWidget(TabViewFactory.getTotalTabView()),
-                    Guide.getBorderedWidget(TabViewFactory.getTextTabView("Page2")),
+                    Guide.getBorderedWidget(TabViewFactory.getUITabView()),
+                    Guide.getBorderedWidget(TabViewFactory.getPapagoTabView(context)),
                     Guide.getBorderedWidget(TabViewFactory.getTextTabView("Page3")),
                     Guide.getBorderedWidget(TabViewFactory.getTextTabView("Page4")),
                     Guide.getBorderedWidget(Guide.getDummyListView())
@@ -98,11 +115,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
               ],
             )),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black.withAlpha(10),
-        onPressed: (){},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: FabCircularMenu(            // floating action 버튼만의 영역
+        key: fabKey,
+        fabOpenIcon: Icon(Icons.add,color: Colors.black),
+        fabCloseIcon:Icon(Icons.close,color: Colors.black),
+        fabColor: Colors.white.withAlpha(200),
+        ringColor: Colors.black.withAlpha(50),
+        ringDiameter: screenWidth*0.9,
+        children: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.wifi,color: Colors.white,)),
+          IconButton(onPressed: (){}, icon: Icon(Icons.credit_card,color: Colors.white)),
+          IconButton(onPressed: (){
+            fabKey.currentState?.close();
+          }, icon: Icon(Icons.account_box_rounded,color: Colors.white)),
+        ],
       ),
     );
   }
