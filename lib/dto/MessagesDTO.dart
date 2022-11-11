@@ -43,7 +43,6 @@ class MessagesDTO{
       'writer':writer,
       'message':message
     };
-
     return map;
   }
 

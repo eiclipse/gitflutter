@@ -47,5 +47,10 @@ class Guide{
     );
   }
 
+  // static String getFormattedDate(int timestamp){
+  //
+  //   DateFormat df;
+  //
+  // }
 
 }

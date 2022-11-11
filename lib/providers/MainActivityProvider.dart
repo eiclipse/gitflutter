@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 
+import '../dao/MessagesDAO.dart';
+import '../dto/MessagesDTO.dart';
+
 class MainAcitivityProvider with ChangeNotifier{
+  // Papago related
   String _papagoResult = "";
   String _papagoBeforeText = "";
+
 
   String get papagoResult => _papagoResult;
   set papagoResult(String value) {

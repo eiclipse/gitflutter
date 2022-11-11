@@ -104,10 +104,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                   physics: NeverScrollableScrollPhysics(),
                   controller: _tabController,
                   children: [
-                    Guide.getBorderedWidget(TabViewFactory.getUITabView()),
-                    Guide.getBorderedWidget(TabViewFactory.getPapagoTabView(context)),
-                    Guide.getBorderedWidget(TabViewFactory.get_DBCRUD_TabView(context)),
-                    Guide.getBorderedWidget(TabViewFactory.getTextTabView("Page4")),
+                    TabViewFactory.getUITabView(),
+                    TabViewFactory.getPapagoTabView(context),
+                    TabViewFactory.get_DBInsert_TabView(context),
+                    Guide.getBorderedWidget(TabViewFactory.get_DBList_TabView(context)),
                     Guide.getBorderedWidget(Guide.getDummyListView())
                   ],
                 )

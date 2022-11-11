@@ -19,8 +19,9 @@ class TabViewFactory with ChangeNotifier{
 
   // DB_Insert Related
   static final TextEditingController _messageController = TextEditingController();
-  static final TextEditingController _writerController = TextEditingController();
 
+  static final TextEditingController _writerController = TextEditingController();
+  static final FocusNode _writerFocusNode = FocusNode();
 
   static getTextTabView(String str){
     return Text(str);
@@ -262,12 +263,13 @@ class TabViewFactory with ChangeNotifier{
     );
   }
 
-  static get_DBCRUD_TabView(BuildContext context){
+  static get_DBInsert_TabView(BuildContext context){
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
+            focusNode: _writerFocusNode,
             controller: _writerController,
             decoration: InputDecoration(labelText: 'Writer',border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
             style: TextStyle(
@@ -315,6 +317,27 @@ class TabViewFactory with ChangeNotifier{
                       onPressed: () {
                         MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
                         Navigator.pop(context);
+
+                        Dialogs.materialDialog(
+                            msg: '입력이 완료되었습니다.',
+                            title: "확인",
+                            color: Colors.white,
+                            context: context,
+                            actions: [
+                              IconsOutlineButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _writerController.text="";
+                                  _messageController.text="";
+                                  _writerFocusNode.requestFocus();
+                                },
+                                text: '확인',
+                                iconData: Icons.cancel_outlined,
+                                textStyle: TextStyle(color: Colors.grey),
+                                iconColor: Colors.grey,
+                              )
+                            ]
+                        );
                       },
                       text: '확인',
                       iconData: Icons.add_circle,
@@ -332,4 +355,93 @@ class TabViewFactory with ChangeNotifier{
       ],
     );
   }
+
+  static get_DBList_TabView(BuildContext context){
+    return Column(
+      children: [
+        Container(
+            width:double.infinity,
+            height:60,
+            child: const Align(
+              child: Text(
+                "Message List",
+                style:TextStyle(
+                  fontSize: 30,
+                ),
+              ),
+            )
+        ),
+        Expanded(
+          child: FutureBuilder(
+              future: MessagesDAO.db.list(),
+              builder: (ctx, AsyncSnapshot<List<MessagesDTO>> snapshot){
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      MessagesDTO dto = snapshot.data![index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Container(
+                            height:60,
+                            child:Column(
+                              children: [
+                                Expanded(
+                                    flex:7,
+                                    child: Container(
+                                        width: double.infinity,
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            dto.message,
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                            ),
+                                          ),
+                                        )
+                                    )
+                                ),
+                                Expanded(
+                                  flex:3,
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.grey,
+                                          width:1
+                                        )
+                                      )
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Positioned(
+                                          child: Text("${dto.writer} / ${dto.write_date}",
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey
+                                            ),
+                                          ),
+                                          left: 3,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                        ),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                return const Center(child: CircularProgressIndicator());
+              }
+          ),
+        )
+      ],
+    );
+  }
+
 }

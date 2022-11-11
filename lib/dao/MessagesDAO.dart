@@ -38,7 +38,7 @@ class MessagesDAO{
 
   Future<List<MessagesDTO>> list() async{
     final db = await database;
-    List<Map<String,dynamic>> result = await db.query("accounts");
+    List<Map<String,dynamic>> result = await db.query("messages");
     return result.isNotEmpty ? result.map((e) => MessagesDTO.fromDatabaseJson(e)).toList() : [];
   }
 
