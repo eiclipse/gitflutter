@@ -93,8 +93,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                         tabs: [
                           Tab(text: 'UI'),
                           Tab(text: 'PapagoAPI'),
-                          Tab(text: 'Current'),
-                          Tab(text: 'Earnings'),
+                          Tab(text: 'DB_Insert'),
+                          Tab(text: 'DB_List'),
                           Tab(text: 'Balance'),
                         ],
                       ),
@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                   children: [
                     Guide.getBorderedWidget(TabViewFactory.getUITabView()),
                     Guide.getBorderedWidget(TabViewFactory.getPapagoTabView(context)),
-                    Guide.getBorderedWidget(TabViewFactory.getTextTabView("Page3")),
+                    Guide.getBorderedWidget(TabViewFactory.get_DBCRUD_TabView(context)),
                     Guide.getBorderedWidget(TabViewFactory.getTextTabView("Page4")),
                     Guide.getBorderedWidget(Guide.getDummyListView())
                   ],

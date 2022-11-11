@@ -29,8 +29,6 @@ class Guide{
       child: w,
     );
   }
-  
-
 
   static ListView getDummyListView(){
     return ListView(

@@ -2,13 +2,25 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gitpractice01/apis/web/PapagoAPI.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/Guide.dart';
+import '../../dao/MessagesDAO.dart';
+import '../../dto/MessagesDTO.dart';
 import '../../providers/MainActivityProvider.dart';
 
 class TabViewFactory with ChangeNotifier{
+
+  // PAPAGO Related
   static final TextEditingController _fromMessageController = TextEditingController();
+
+  // DB_Insert Related
+  static final TextEditingController _messageController = TextEditingController();
+  static final TextEditingController _writerController = TextEditingController();
+
 
   static getTextTabView(String str){
     return Text(str);
@@ -61,9 +73,7 @@ class TabViewFactory with ChangeNotifier{
   }
 
   static getPapagoTabView(BuildContext context){
-
     var data = Provider.of<MainAcitivityProvider>(context);
-
     return Column(
       children: [
         Expanded(         // From box
@@ -87,9 +97,9 @@ class TabViewFactory with ChangeNotifier{
                               left:3,
                               bottom:3,
                               child: Text("번역 할 메세지 입력",style: TextStyle(
-                                fontStyle: FontStyle.italic,
-                                color:Colors.black,
-                                fontSize: 16
+                                  fontStyle: FontStyle.italic,
+                                  color:Colors.black,
+                                  fontSize: 16
                               ),)
                           )
                         ],
@@ -130,9 +140,6 @@ class TabViewFactory with ChangeNotifier{
                     _fromMessageController.text="";
                     return;
                   }
-
-                  print(_fromMessageController.text);
-
                   FocusScopeNode currentFocus = FocusScope.of(context);
                   if (!currentFocus.hasPrimaryFocus) {
                     currentFocus.unfocus();
@@ -251,6 +258,77 @@ class TabViewFactory with ChangeNotifier{
               )
           ),
         ),
+      ],
+    );
+  }
+
+  static get_DBCRUD_TabView(BuildContext context){
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: _writerController,
+            decoration: InputDecoration(labelText: 'Writer',border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
+            style: TextStyle(
+                fontSize: 20
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: _messageController,
+            maxLines: 4,
+            decoration: InputDecoration(labelText: 'Message',border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
+            style: TextStyle(
+                fontSize: 20
+            ),
+          ),
+        ),
+        OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(
+                  color: Colors.blueAccent
+              ),
+            ),
+            onPressed: (){
+              String writer = _writerController.text;
+              String message = _messageController.text;
+
+              Dialogs.materialDialog(
+                  msg: '이대로 글 작성을 완료하시겠습니까?',
+                  title: "글 입력 확인",
+                  color: Colors.white,
+                  context: context,
+                  actions: [
+                    IconsOutlineButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      text: '취소',
+                      iconData: Icons.cancel_outlined,
+                      textStyle: TextStyle(color: Colors.grey),
+                      iconColor: Colors.grey,
+                    ),
+                    IconsButton(
+                      onPressed: () {
+                        MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
+                        Navigator.pop(context);
+                      },
+                      text: '확인',
+                      iconData: Icons.add_circle,
+                      color: Colors.blueAccent,
+                      textStyle: TextStyle(color: Colors.white),
+                      iconColor: Colors.white,
+                    ),
+                  ]
+              );
+            },
+            child: Text("기록하기",style: TextStyle(
+                color: Colors.blueAccent
+            ),)
+        )
       ],
     );
   }
