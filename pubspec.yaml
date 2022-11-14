@@ -89,6 +89,10 @@ flutter:
         - asset: assets/fonts/Quicksand-Medium.ttf
         - asset: assets/fonts/Quicksand-Regular.ttf
           weight: 700
+    - family: SUIT
+      fonts:
+        - asset: assets/fonts/SUIT-Variable.ttf
+          weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

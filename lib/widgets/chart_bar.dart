@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ChartBar extends StatelessWidget {
   final String day;
@@ -6,10 +7,10 @@ class ChartBar extends StatelessWidget {
   final double spendingPercent;
 
   const ChartBar(
-      this.day,
-      this.amount,
-      this.spendingPercent,
-      );
+    this.day,
+    this.amount,
+    this.spendingPercent,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,10 @@ class ChartBar extends StatelessWidget {
         SizedBox(
           height: 20,
           child: FittedBox(
-            child: Text('₩ $amount'),
+            child: Text(
+              '₩ ${NumberFormat('###,###,###').format(amount)}',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
           ),
         ),
         const SizedBox(
@@ -28,16 +32,15 @@ class ChartBar extends StatelessWidget {
           height: 60,
           width: 10,
           child: Stack(
-            alignment: Alignment.center,
+            //alignment: Alignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.grey,
                     width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(10),
                   color: const Color.fromARGB(220, 223, 223, 223),
                 ),
               ),
@@ -47,7 +50,7 @@ class ChartBar extends StatelessWidget {
                 child: SizedBox(
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(10),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -56,10 +59,13 @@ class ChartBar extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
-        Text(day),
+        Text(
+          day,
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
       ],
     );
   }

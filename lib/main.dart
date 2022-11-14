@@ -35,12 +35,32 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
+              titleSmall: const TextStyle(
+                fontWeight: FontWeight.normal,
+                color: Colors.white,
+              ),
+              labelMedium: const TextStyle(
+                fontFamily: 'SUIT',
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+              labelSmall: const TextStyle(
+                fontFamily: 'SUIT',
+                color: Colors.black87,
+              ),
             ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            foregroundColor: Colors.white,
+          ),
+        ),
         appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 20,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ),
@@ -58,12 +78,23 @@ class _MyAppPageState extends State<MyAppPage> {
   final List<Transaction> _transactions = [];
 
   // new trasaction add function
-  void _addTransaction(String title, int amount) {
+  void _addTransaction(String title, int amount, DateTime date) {
     setState(() {
       _transactions.add(
         Transaction(
-            id: 't2', title: title, amount: amount, date: DateTime.now()),
+            id: '${UniqueKey().hashCode}',
+            title: title,
+            amount: amount,
+            date: date),
       );
+    });
+  }
+
+  // delete transaction function
+  void _deleteTransaction(String id) {
+    setState(() {
+      // 리스트를 돌며 조건에 해당하는 요소 모두 제거
+      _transactions.removeWhere((tx) => tx.id == id);
     });
   }
 
@@ -91,8 +122,15 @@ class _MyAppPageState extends State<MyAppPage> {
         ],
       ),
       body: Column(children: [
-        Chart(_transactions), // chart area
-        TransactionList(_transactions), // transaction area
+        Chart(_transactions),
+        // chart area
+        Expanded(
+          child: TransactionList(
+            _transactions,
+            _deleteTransaction,
+          ),
+        ),
+        // transaction area
       ]),
       floatingActionButton: FloatingActionButton(
         onPressed: _showNewTransaction,
