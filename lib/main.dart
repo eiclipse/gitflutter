@@ -5,6 +5,7 @@ import 'package:gitpractice01/ui/main/TabViewFactory.dart';
 import 'package:provider/provider.dart';
 
 import 'components/Guide.dart';
+import 'dto/MessagesDTO.dart';
 
 void main() {
   runApp(const MyApp());
@@ -107,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                     TabViewFactory.getUITabView(),
                     TabViewFactory.getPapagoTabView(context),
                     TabViewFactory.get_DBInsert_TabView(context),
-                    Guide.getBorderedWidget(TabViewFactory.get_DBList_TabView(context)),
+                    TabViewFactory.get_DBList_TabView(context),
                     Guide.getBorderedWidget(Guide.getDummyListView())
                   ],
                 )

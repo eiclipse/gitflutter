@@ -1,6 +1,8 @@
 
 
-class MessagesDTO{
+import 'package:flutter/cupertino.dart';
+
+class MessagesDTO with ChangeNotifier{
   int _seq;
   String _writer;
   String _message;
@@ -45,6 +47,4 @@ class MessagesDTO{
     };
     return map;
   }
-
-
 }

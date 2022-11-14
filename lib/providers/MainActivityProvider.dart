@@ -8,6 +8,8 @@ class MainAcitivityProvider with ChangeNotifier{
   String _papagoResult = "";
   String _papagoBeforeText = "";
 
+  // DB_List hidden checkbox related
+  bool _deleteMode = false;
 
   String get papagoResult => _papagoResult;
   set papagoResult(String value) {
@@ -18,6 +20,13 @@ class MainAcitivityProvider with ChangeNotifier{
   String get papagoBeforeText => _papagoBeforeText;
   set papagoBeforeText(String value) {
     _papagoBeforeText = value;
+    notifyListeners();
+  }
+
+  bool get deleteMode => _deleteMode;
+
+  set deleteMode(bool value) {
+    _deleteMode = value;
     notifyListeners();
   }
 }

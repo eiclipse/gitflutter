@@ -357,6 +357,8 @@ class TabViewFactory with ChangeNotifier{
   }
 
   static get_DBList_TabView(BuildContext context){
+    var data = Provider.of<MainAcitivityProvider>(context);
+
     return Column(
       children: [
         Container(
@@ -380,54 +382,52 @@ class TabViewFactory with ChangeNotifier{
                     itemCount: snapshot.data!.length,
                     itemBuilder: (BuildContext context, int index) {
                       MessagesDTO dto = snapshot.data![index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Container(
-                            height:60,
-                            child:Column(
-                              children: [
-                                Expanded(
-                                    flex:7,
-                                    child: Container(
-                                        width: double.infinity,
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            dto.message,
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                            ),
-                                          ),
-                                        )
-                                    )
-                                ),
-                                Expanded(
-                                  flex:3,
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: Colors.grey,
-                                          width:1
-                                        )
-                                      )
-                                    ),
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          child: Text("${dto.writer} / ${dto.write_date}",
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey
-                                            ),
-                                          ),
-                                          left: 3,
+
+                      return GestureDetector(
+                        onLongPress: (){
+                          if(data.deleteMode){
+                            data.deleteMode = false;
+                          }else{
+                            data.deleteMode = true;
+                          }
+                        },
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: SizedBox(
+                                height:60,
+                                child: ListTile(
+                                  dense: true,
+                                  minLeadingWidth: 0,
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.all(0),
+                                  leading: data.deleteMode ?
+                                  Checkbox(
+                                      value: false,
+                                      onChanged: (bool? value) {
+                                        print("${dto.seq} : ${value}");
+                                      }) : Container(width:0),
+                                  title:SizedBox(
+                                      width: double.infinity,
+                                      child: Text(
+                                        dto.message,
+                                        style: const TextStyle(
+                                          fontSize: 24,
                                         ),
-                                      ],
+                                      )
+                                  ),
+                                  subtitle: Container(
+                                    decoration: const BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(width:1,color:Colors.grey)
+                                        )
+                                    ),
+                                    child: Text("${dto.writer} / ${dto.write_date}",
+                                      style: const TextStyle(
+                                          color: Colors.grey
+                                      ),
                                     ),
                                   ),
                                 )
-                              ],
                             )
                         ),
                       );
@@ -439,9 +439,38 @@ class TabViewFactory with ChangeNotifier{
                 return const Center(child: CircularProgressIndicator());
               }
           ),
+        ),
+        Container(
+          width:double.infinity,
+          decoration: BoxDecoration(
+              border: Border.all(width:1,color:Colors.red)
+          ),
+          height:data.deleteMode?60:0,
+          child: Row(
+            children: [
+              data.deleteMode?Expanded(
+                child: TextButton.icon(
+                    icon: Icon(Icons.close),
+                    label: Text("취소"),
+                    onPressed: (){
+                      data.deleteMode=false;
+                    }
+                ),
+              ):Container(),
+              data.deleteMode?Expanded(
+                child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
+                    icon: Icon(Icons.delete_forever),
+                    label: Text("삭제"),
+                    onPressed: (){}
+                ),
+              ):Container()
+            ],
+          ),
         )
       ],
     );
   }
-
 }
