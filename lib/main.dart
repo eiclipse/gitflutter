@@ -75,7 +75,52 @@ class MyAppPage extends StatefulWidget {
 }
 
 class _MyAppPageState extends State<MyAppPage> {
-  final List<Transaction> _transactions = [];
+  final List<Transaction> _transactions = [
+    // 샘플 데이터
+    // Transaction(
+    //   id: '1',
+    //   title: 'Hotdog',
+    //   amount: 3000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '2',
+    //   title: 'Nice Hat',
+    //   amount: 10000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '3',
+    //   title: 'Nice Wfdd',
+    //   amount: 8000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '4',
+    //   title: 'Nice SVC',
+    //   amount: 5000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '5',
+    //   title: 'Nice TYG',
+    //   amount: 60000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '5',
+    //   title: 'Nice TYG',
+    //   amount: 60000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '5',
+    //   title: 'Nice TYG',
+    //   amount: 60000,
+    //   date: DateTime.now(),
+    // ),
+  ];
+  bool _showChart = false;
 
   // new trasaction add function
   void _addTransaction(String title, int amount, DateTime date) {
@@ -110,28 +155,83 @@ class _MyAppPageState extends State<MyAppPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Personal Expenses'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            iconSize: 45.0,
-            onPressed: _showNewTransaction,
-          ),
-        ],
-      ),
-      body: Column(children: [
-        Chart(_transactions),
-        // chart area
-        Expanded(
-          child: TransactionList(
-            _transactions,
-            _deleteTransaction,
-          ),
+    final appBar = AppBar(
+      title: const Text('Personal Expenses'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.add),
+          iconSize: 45.0,
+          onPressed: _showNewTransaction,
         ),
-        // transaction area
-      ]),
+      ],
+    );
+
+    // 앱이 리빌드될때마다 기기가 landscape 상태인지 여부를 boolean 값으로 저장
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    // portrait 모드로 돌아왔을때 차트스위치 꺼주기
+    if (!isLandscape) _showChart = false;
+
+    return Scaffold(
+      appBar: appBar,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (isLandscape) // landscape 모드에서만 스위치 보이기
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Show Chart!'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    },
+                    activeColor: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
+              ),
+            if (!isLandscape) // landscape 모드 아닐때는 30% 높이로 차트 보이기
+              SizedBox(
+                /*MediaQuery.of(context).size .width/.height 기기의 크기 정보
+           height 에 고정값을 주면 landscape 모드에서 고정값만큼 높이를 차지하면서
+           위의 차트 부분이 위로 스크롤 됐을때 다시 스크롤을 내리는게 쉽지 않음
+           기기의 높이의 상대적 height 로 설정해두면 landscape 모드에서도
+           해당 퍼센트만 높이를 차지하기 때문에 chart를 스크롤하는게 어렵진 않음.
+           또한 데이터가 없을 때도 화면이 스크롤되지 않음.
+           appBar와 기본 top padding 을 뺀 100%를 기준으로 잡아야함
+         */
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(_transactions),
+              ),
+            _showChart
+                ? SizedBox( // landscape 모드이면서 차트보기 스위치 켜져있을땐 높이 70%로 차트보이기
+                    height: (MediaQuery.of(context).size.height -
+                            appBar.preferredSize.height -
+                            MediaQuery.of(context).padding.top) *
+                        0.7,
+                    child: Chart(_transactions),
+                  )
+                : SizedBox( // 차트보기 스위치 꺼져있거나 portrait 모드일때 지출내역 70% 높이
+                    height: (MediaQuery.of(context).size.height -
+                            appBar.preferredSize.height -
+                            MediaQuery.of(context).padding.top) *
+                        0.7,
+                    child: TransactionList(
+                      _transactions,
+                      _deleteTransaction,
+                    ),
+                  ),
+            // transaction area
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showNewTransaction,
         child: const Icon(
