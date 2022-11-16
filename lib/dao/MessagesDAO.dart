@@ -38,8 +38,16 @@ class MessagesDAO{
 
   Future<List<MessagesDTO>> list() async{
     final db = await database;
-    List<Map<String,dynamic>> result = await db.query("messages");
+    List<Map<String,dynamic>> result = await db.query("messages",orderBy: "seq desc");
     return result.isNotEmpty ? result.map((e) => MessagesDTO.fromDatabaseJson(e)).toList() : [];
+  }
+
+  Future<int> delete(List<int> list) async{
+    print(list);
+    final db = await database;
+    int result = await db.delete("messages",where: "seq IN (${List.filled(list.length, '?').join(',')})",whereArgs: list);
+    print(result);
+    return result;
   }
 
 }

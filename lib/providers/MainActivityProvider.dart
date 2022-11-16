@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:gitpractice01/ui/main/TabViewFactory.dart';
 
 import '../dao/MessagesDAO.dart';
 import '../dto/MessagesDTO.dart';
@@ -10,6 +11,25 @@ class MainAcitivityProvider with ChangeNotifier{
 
   // DB_List hidden checkbox related
   bool _deleteMode = false;
+
+  void insert(writer, message){
+    MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
+    TabViewFactory.messages = MessagesDAO.db.list();
+    notifyListeners();
+  }
+
+  void isCheckedRefresh(MessagesDTO dto) {
+    dto.isChecked = !dto.isChecked;
+    notifyListeners();
+  }
+  
+  void removeAll(List<int> list){
+    MessagesDAO.db.delete(list);
+    TabViewFactory.messages = MessagesDAO.db.list();
+    notifyListeners();
+  }
+
+
 
   String get papagoResult => _papagoResult;
   set papagoResult(String value) {
@@ -29,4 +49,13 @@ class MainAcitivityProvider with ChangeNotifier{
     _deleteMode = value;
     notifyListeners();
   }
+
+  void deleteBySeq(List<int> delete_list) {
+    MessagesDAO.db.delete(delete_list);
+    notifyListeners();
+  }
+
+
+
+
 }

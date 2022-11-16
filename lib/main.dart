@@ -60,6 +60,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
     double screenWidth = queryData.size.width;
     double screenHeight = queryData.size.height;
 
+    var mainPrv = Provider.of<MainAcitivityProvider>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(

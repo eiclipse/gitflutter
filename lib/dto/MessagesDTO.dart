@@ -47,4 +47,10 @@ class MessagesDTO with ChangeNotifier{
     };
     return map;
   }
+
+  bool _isChecked = false;
+  bool get isChecked => _isChecked;
+  set isChecked(bool value) {
+    _isChecked = value;
+  }
 }

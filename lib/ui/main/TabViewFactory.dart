@@ -19,9 +19,14 @@ class TabViewFactory with ChangeNotifier{
 
   // DB_Insert Related
   static final TextEditingController _messageController = TextEditingController();
-
   static final TextEditingController _writerController = TextEditingController();
   static final FocusNode _writerFocusNode = FocusNode();
+
+  // DB_List Related
+  static Future<List<MessagesDTO>> messages = MessagesDAO.db.list();
+
+  // prevent spam filter
+  static int i = 1;
 
   static getTextTabView(String str){
     return Text(str);
@@ -264,6 +269,7 @@ class TabViewFactory with ChangeNotifier{
   }
 
   static get_DBInsert_TabView(BuildContext context){
+    var data = Provider.of<MainAcitivityProvider>(context);
     return Column(
       children: [
         Padding(
@@ -315,7 +321,8 @@ class TabViewFactory with ChangeNotifier{
                     ),
                     IconsButton(
                       onPressed: () {
-                        MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
+                        //MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
+                        data.insert(writer,message);
                         Navigator.pop(context);
 
                         Dialogs.materialDialog(
@@ -358,119 +365,131 @@ class TabViewFactory with ChangeNotifier{
 
   static get_DBList_TabView(BuildContext context){
     var data = Provider.of<MainAcitivityProvider>(context);
-
-    return Column(
-      children: [
-        Container(
-            width:double.infinity,
-            height:60,
-            child: const Align(
-              child: Text(
-                "Message List",
-                style:TextStyle(
-                  fontSize: 30,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(2, 8.0, 8.0, 8.0),
+      child: Column(
+        children: [
+          Container(
+              width:double.infinity,
+              height:60,
+              child: const Align(
+                child: Text(
+                  "Message List",
+                  style:TextStyle(
+                    fontSize: 30,
+                  ),
                 ),
-              ),
-            )
-        ),
-        Expanded(
-          child: FutureBuilder(
-              future: MessagesDAO.db.list(),
-              builder: (ctx, AsyncSnapshot<List<MessagesDTO>> snapshot){
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      MessagesDTO dto = snapshot.data![index];
-
-                      return GestureDetector(
-                        onLongPress: (){
-                          if(data.deleteMode){
-                            data.deleteMode = false;
-                          }else{
-                            data.deleteMode = true;
-                          }
-                        },
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: SizedBox(
-                                height:60,
-                                child: ListTile(
-                                  dense: true,
-                                  minLeadingWidth: 0,
-                                  horizontalTitleGap: 0,
-                                  contentPadding: EdgeInsets.all(0),
-                                  leading: data.deleteMode ?
-                                  Checkbox(
-                                      value: false,
-                                      onChanged: (bool? value) {
-                                        print("${dto.seq} : ${value}");
-                                      }) : Container(width:0),
-                                  title:SizedBox(
-                                      width: double.infinity,
-                                      child: Text(
-                                        dto.message,
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                        ),
-                                      )
-                                  ),
-                                  subtitle: Container(
-                                    decoration: const BoxDecoration(
-                                        border: Border(
-                                            bottom: BorderSide(width:1,color:Colors.grey)
+              )
+          ),
+          Expanded(
+            child: FutureBuilder(
+                future: messages,
+                builder: (ctx, AsyncSnapshot<List<MessagesDTO>> snapshot){
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onLongPress: (){
+                            if(data.deleteMode){
+                              data.deleteMode = false;
+                            }else{
+                              data.deleteMode = true;
+                            }
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: SizedBox(
+                                  height:60,
+                                  child: ListTile(
+                                    dense: true,
+                                    minLeadingWidth: 0,
+                                    horizontalTitleGap: 0,
+                                    contentPadding: EdgeInsets.all(0),
+                                    leading: data.deleteMode ?
+                                    Checkbox(
+                                        value: snapshot.data![index].isChecked,
+                                        onChanged: (bool? value) {
+                                          print("${snapshot.data![index].isChecked} : ${i++}");
+                                          data.isCheckedRefresh(snapshot.data![index]);
+                                        }) : Container(width:0),
+                                    title:SizedBox(
+                                        width: double.infinity,
+                                        child: Text(
+                                          snapshot.data![index].message,
+                                          style: const TextStyle(
+                                            fontSize: 24,
+                                          ),
                                         )
                                     ),
-                                    child: Text("${dto.writer} / ${dto.write_date}",
-                                      style: const TextStyle(
-                                          color: Colors.grey
+                                    subtitle: Container(
+                                      decoration: const BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(width:1,color:Colors.grey)
+                                          )
+                                      ),
+                                      child: Text("${snapshot.data![index].writer} / ${snapshot.data![index].write_date}",
+                                        style: const TextStyle(
+                                            color: Colors.grey
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                )
-                            )
-                        ),
-                      );
-                    },
-                  );
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
+                                  )
+                              )
+                          ),
+                        );
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return const Center(child: CircularProgressIndicator());
                 }
-                return const Center(child: CircularProgressIndicator());
-              }
+            ),
           ),
-        ),
-        Container(
-          width:double.infinity,
-          decoration: BoxDecoration(
-              border: Border.all(width:1,color:Colors.red)
-          ),
-          height:data.deleteMode?60:0,
-          child: Row(
-            children: [
-              data.deleteMode?Expanded(
-                child: TextButton.icon(
-                    icon: Icon(Icons.close),
-                    label: Text("취소"),
-                    onPressed: (){
-                      data.deleteMode=false;
-                    }
-                ),
-              ):Container(),
-              data.deleteMode?Expanded(
-                child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                      primary: Colors.blue,
-                    ),
-                    icon: Icon(Icons.delete_forever),
-                    label: Text("삭제"),
-                    onPressed: (){}
-                ),
-              ):Container()
-            ],
-          ),
-        )
-      ],
+          Container(
+            width:double.infinity,
+            decoration: BoxDecoration(
+                border: Border.all(width:1,color:Colors.grey)
+            ),
+            height:data.deleteMode?60:0,
+            child: Row(
+              children: [
+                data.deleteMode?Expanded(
+                  child: TextButton.icon(
+                      icon: Icon(Icons.close),
+                      label: Text("취소"),
+                      onPressed: (){
+                        data.deleteMode=false;
+                      }
+                  ),
+                ):Container(),
+                data.deleteMode?Expanded(
+                  child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                        primary: Colors.blue,
+                      ),
+                      icon: Icon(Icons.delete_forever),
+                      label: Text("삭제"),
+                      onPressed: (){
+                        messages.then((value){
+                          List<int> del_list = [];
+                          value.forEach((e) {
+                            if(e.isChecked){
+                              del_list.add(e.seq);
+                            }
+                          });
+                          data.removeAll(del_list);
+                          data.deleteMode=false;
+                        });
+                      }
+                  ),
+                ):Container()
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
