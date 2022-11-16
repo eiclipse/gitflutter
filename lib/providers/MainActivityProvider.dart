@@ -61,6 +61,14 @@ class MainAcitivityProvider with ChangeNotifier{
     notifyListeners();
   }
 
+  void setAllIsChecked(bool bool) {
+    this.messages.then((list){
+      list.forEach((e) {
+        e.isChecked=bool;
+      });
+    });
+  }
+
 
 
 

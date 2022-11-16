@@ -457,6 +457,7 @@ class TabViewFactory with ChangeNotifier{
                       label: Text("취소"),
                       onPressed: (){
                         data.deleteMode=false;
+                        data.setAllIsChecked(false);
                       }
                   ),
                 ):Container(),
