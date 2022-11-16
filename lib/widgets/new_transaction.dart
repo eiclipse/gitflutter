@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import './adaptive_textbutton.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTransaction;
@@ -24,11 +29,10 @@ class _NewTransactionState extends State<NewTransaction> {
     if (title.isEmpty || amount <= 0 || _selectedDate == null) return;
 
     widget.addTransaction(
-      // add data to list
-      title,
-      amount,
-      _selectedDate
-    );
+        // add data to list
+        title,
+        amount,
+        _selectedDate);
 
     Navigator.of(context).pop(); // close modal
   }
@@ -39,9 +43,10 @@ class _NewTransactionState extends State<NewTransaction> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2022),
       lastDate: DateTime.now(),
-    ).then((date) { // 사용자가 데이트피커를 연 후 취소/확인 버튼을 눌렀을 때 실행됨.
+    ).then((date) {
+      // 사용자가 데이트피커를 연 후 취소/확인 버튼을 눌렀을 때 실행됨.
       setState(() {
-        if(date != null) _selectedDate = date; // 날짜를 선택했다면
+        if (date != null) _selectedDate = date; // 날짜를 선택했다면
       });
     });
   }
@@ -77,14 +82,14 @@ class _NewTransactionState extends State<NewTransaction> {
             children: [
               Expanded(
                 child: Text(
-                  _selectedDate == null ? 'Date has not chosen.' : DateFormat('yMEd', 'ko_KR').format(_selectedDate!),
+                  _selectedDate == null
+                      ? 'Date has not chosen.'
+                      : DateFormat('yMEd', 'ko_KR').format(_selectedDate!),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
-              TextButton(
-                onPressed: _showDatePicker,
-                child: const Text('Choose Date!'),
-              ),
+              // 커스텀 텍스트 버튼 위젯으로 분리해보기
+              AdaptiveTextButton('Choose Date', _showDatePicker),
             ],
           ),
           ElevatedButton(
