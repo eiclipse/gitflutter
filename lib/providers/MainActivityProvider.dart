@@ -11,11 +11,17 @@ class MainAcitivityProvider with ChangeNotifier{
 
   // DB_List hidden checkbox related
   bool _deleteMode = false;
+  Future<List<MessagesDTO>> _messages = MessagesDAO.db.list();
+
+  Future<List<MessagesDTO>> get messages => _messages;
+  set messages(Future<List<MessagesDTO>> value) {
+    _messages = value;
+  }
 
   void insert(writer, message){
     MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
-    TabViewFactory.messages = MessagesDAO.db.list();
-    notifyListeners();
+    this.messages = MessagesDAO.db.list();
+    //notifyListeners();
   }
 
   void isCheckedRefresh(MessagesDTO dto) {
@@ -25,8 +31,8 @@ class MainAcitivityProvider with ChangeNotifier{
   
   void removeAll(List<int> list){
     MessagesDAO.db.delete(list);
-    TabViewFactory.messages = MessagesDAO.db.list();
-    notifyListeners();
+    this.messages = MessagesDAO.db.list();
+    //notifyListeners();
   }
 
 

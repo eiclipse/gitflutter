@@ -40,6 +40,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
+  final TabViewFactory tabViewFactory = TabViewFactory();
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
   TabController? _tabController;
 
@@ -59,8 +60,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
 
     double screenWidth = queryData.size.width;
     double screenHeight = queryData.size.height;
-
-    var mainPrv = Provider.of<MainAcitivityProvider>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -107,10 +106,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                   physics: NeverScrollableScrollPhysics(),
                   controller: _tabController,
                   children: [
-                    TabViewFactory.getUITabView(),
-                    TabViewFactory.getPapagoTabView(context),
-                    TabViewFactory.get_DBInsert_TabView(context),
-                    TabViewFactory.get_DBList_TabView(context),
+                    tabViewFactory.getUITabView(),
+                    tabViewFactory.getPapagoTabView(context),
+                    tabViewFactory.get_DBInsert_TabView(context),
+                    tabViewFactory.get_DBList_TabView(context),
                     Guide.getBorderedWidget(Guide.getDummyListView())
                   ],
                 )

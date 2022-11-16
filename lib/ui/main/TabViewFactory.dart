@@ -15,24 +15,21 @@ import '../../providers/MainActivityProvider.dart';
 class TabViewFactory with ChangeNotifier{
 
   // PAPAGO Related
-  static final TextEditingController _fromMessageController = TextEditingController();
+   final TextEditingController _fromMessageController = TextEditingController();
 
   // DB_Insert Related
-  static final TextEditingController _messageController = TextEditingController();
-  static final TextEditingController _writerController = TextEditingController();
-  static final FocusNode _writerFocusNode = FocusNode();
-
-  // DB_List Related
-  static Future<List<MessagesDTO>> messages = MessagesDAO.db.list();
+   final TextEditingController _messageController = TextEditingController();
+   final TextEditingController _writerController = TextEditingController();
+   final FocusNode _writerFocusNode = FocusNode();
 
   // prevent spam filter
-  static int i = 1;
+   int i = 1;
 
-  static getTextTabView(String str){
+   getTextTabView(String str){
     return Text(str);
   }
 
-  static getUITabView(){
+   getUITabView(){
     return ListView(
       children: [
         Container(                    // Vertical ListView 의 첫번째 아이템 : CarouselSlider
@@ -78,7 +75,7 @@ class TabViewFactory with ChangeNotifier{
     );
   }
 
-  static getPapagoTabView(BuildContext context){
+   getPapagoTabView(BuildContext context){
     var data = Provider.of<MainAcitivityProvider>(context);
     return Column(
       children: [
@@ -268,7 +265,7 @@ class TabViewFactory with ChangeNotifier{
     );
   }
 
-  static get_DBInsert_TabView(BuildContext context){
+   get_DBInsert_TabView(BuildContext context){
     var data = Provider.of<MainAcitivityProvider>(context);
     return Column(
       children: [
@@ -321,7 +318,6 @@ class TabViewFactory with ChangeNotifier{
                     ),
                     IconsButton(
                       onPressed: () {
-                        //MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
                         data.insert(writer,message);
                         Navigator.pop(context);
 
@@ -363,7 +359,7 @@ class TabViewFactory with ChangeNotifier{
     );
   }
 
-  static get_DBList_TabView(BuildContext context){
+   get_DBList_TabView(BuildContext context){
     var data = Provider.of<MainAcitivityProvider>(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 8.0, 8.0, 8.0),
@@ -383,7 +379,7 @@ class TabViewFactory with ChangeNotifier{
           ),
           Expanded(
             child: FutureBuilder(
-                future: messages,
+                future: data.messages,
                 builder: (ctx, AsyncSnapshot<List<MessagesDTO>> snapshot){
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -472,7 +468,7 @@ class TabViewFactory with ChangeNotifier{
                       icon: Icon(Icons.delete_forever),
                       label: Text("삭제"),
                       onPressed: (){
-                        messages.then((value){
+                        data.messages.then((value){
                           List<int> del_list = [];
                           value.forEach((e) {
                             if(e.isChecked){
