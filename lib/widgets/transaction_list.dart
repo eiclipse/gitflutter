@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import './list_item.dart';
+
 import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
@@ -37,61 +40,24 @@ class TransactionList extends StatelessWidget {
               ],
             );
           })
-        : ListView.builder(
-            itemBuilder: (tx, index) {
-              // 리스트빌더를 이용해 만들어낼 리스트 위젯
-              return Card(
-                margin: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 10,
-                ),
-                elevation: 8,
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    radius: 30,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: FittedBox(
-                        child: Text(
-                          '₩ ${NumberFormat('###,###,###').format(transactions[index].amount)}',
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    transactions[index].title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  subtitle: Text(
-                    DateFormat('yMEd', 'ko_KR')
-                        .format(transactions[index].date),
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  trailing: MediaQuery.of(context).size.width > 400
-                      ? TextButton.icon(
-                          onPressed: () =>
-                              _deleteTransaction(transactions[index].id),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Theme.of(context).errorColor,
-                          ),
-                          icon: Icon(Icons.delete),
-                          label: Text('delete'),
-                        )
-                      : IconButton(
-                          icon: const Icon(
-                            Icons.delete,
-                          ),
-                          color: Theme.of(context).errorColor,
-                          tooltip: 'delete transaction',
-                          onPressed: () =>
-                              _deleteTransaction(transactions[index].id),
-                        ),
-                ),
-              );
-            },
-            itemCount: transactions.length, // 몇 개의 리스트를 뽑아낼지
+        : ListView(
+            children: transactions
+                .map((tx) => ListItem(
+                      key:  ValueKey(tx.id),
+                      transaction: tx,
+                      deleteTransaction: _deleteTransaction,
+                    ))
+                .toList(),
           );
   }
 }
+    /*
+    .builder(
+     itemBuilder: (tx, index) {
+        리스트빌더를 이용해 만들어낼 리스트 위젯
+       return ListItem(transaction: transactions[index], deleteTransaction: _deleteTransaction);
+     },
+     itemCount: transactions.length, // 몇 개의 리스트를 뽑아낼지
+    );
+     */
+

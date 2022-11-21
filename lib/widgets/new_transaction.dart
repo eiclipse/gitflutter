@@ -9,7 +9,7 @@ import './adaptive_textbutton.dart';
 class NewTransaction extends StatefulWidget {
   final Function addTransaction;
 
-  const NewTransaction(this.addTransaction);
+  NewTransaction(this.addTransaction);
 
   @override
   State<NewTransaction> createState() => _NewTransactionState();
@@ -19,6 +19,28 @@ class _NewTransactionState extends State<NewTransaction> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   DateTime? _selectedDate;
+
+  _NewTransactionState();
+
+  /*
+  @override
+  void initState() {
+    print('initState()');
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant NewTransaction oldWidget) {
+    print('didUpdateWidget()');
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    print('dispose()');
+    super.dispose();
+  }
+*/
 
   void _submitData() {
     if (_amountController.text.isEmpty) return;
@@ -53,52 +75,62 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(
-              label: Text('Title'),
-            ),
-            onSubmitted: (_) => _submitData(),
-            /* onSubmitted 는 String 매개변수를 받는 함수를 넘겨줘야 함
-               but submitData는 매개변수가 필요없는 함수라
-               사용하지 않는 매개변수를 받는 익명함수를 만들어 내부적으로 submitData를 넘겨야하는데
-               여기 _ 는 매개변수를 내부적으로 사용하지 않겠다는 의미를 가진 symbol
-             */
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 8,
+        child: Container(
+          padding: EdgeInsets.only(
+            top: 10,
+            right: 10,
+            left: 10,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 10,
           ),
-          TextField(
-            controller: _amountController,
-            decoration: const InputDecoration(
-              label: Text('Amount'),
-            ),
-            keyboardType: TextInputType.number,
-            onSubmitted: (_) => _submitData(),
-          ),
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(
-                child: Text(
-                  _selectedDate == null
-                      ? 'Date has not chosen.'
-                      : DateFormat('yMEd', 'ko_KR').format(_selectedDate!),
-                  style: Theme.of(context).textTheme.bodyMedium,
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  label: Text('Title'),
+                ),
+                onSubmitted: (_) => _submitData(),
+                /* onSubmitted 는 String 매개변수를 받는 함수를 넘겨줘야 함
+                   but submitData는 매개변수가 필요없는 함수라
+                   사용하지 않는 매개변수를 받는 익명함수를 만들어 내부적으로 submitData를 넘겨야하는데
+                   여기 _ 는 매개변수를 내부적으로 사용하지 않겠다는 의미를 가진 symbol
+                 */
+              ),
+              TextField(
+                controller: _amountController,
+                decoration: const InputDecoration(
+                  label: Text('Amount'),
+                ),
+                keyboardType: TextInputType.number,
+                onSubmitted: (_) => _submitData(),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _selectedDate == null
+                          ? 'Date has not chosen.'
+                          : DateFormat('yMEd', 'ko_KR').format(_selectedDate!),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                  // 커스텀 텍스트 버튼 위젯으로 분리해보기
+                  AdaptiveTextButton('Choose Date', _showDatePicker),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: _submitData,
+                child: const Text(
+                  'Add Transaction',
                 ),
               ),
-              // 커스텀 텍스트 버튼 위젯으로 분리해보기
-              AdaptiveTextButton('Choose Date', _showDatePicker),
             ],
           ),
-          ElevatedButton(
-            onPressed: _submitData,
-            child: const Text(
-              'Add Transaction',
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
