@@ -11,8 +11,28 @@ class MainAcitivityProvider with ChangeNotifier{
 
   // DB_List hidden checkbox related
   bool _deleteMode = false;
-  Future<List<MessagesDTO>> _messages = MessagesDAO.db.list();
 
+  void setAllIsChecked(bool bool) {
+    messages.then((list){
+      for (var e in list) {
+        e.isChecked=bool;
+      }
+    });
+  }
+
+  void isCheckedRefresh(MessagesDTO dto) {
+    dto.isChecked = !dto.isChecked;
+    notifyListeners();
+  }
+
+  bool get deleteMode => _deleteMode;
+  set deleteMode(bool value) {
+    _deleteMode = value;
+    notifyListeners();
+  }
+
+  // DB_List list date Related
+  Future<List<MessagesDTO>> _messages = MessagesDAO.db.list();
   Future<List<MessagesDTO>> get messages => _messages;
   set messages(Future<List<MessagesDTO>> value) {
     _messages = value;
@@ -20,20 +40,24 @@ class MainAcitivityProvider with ChangeNotifier{
 
   void insert(writer, message){
     MessagesDAO.db.insert(MessagesDTO(0,writer,message,DateTime.now()));
-    this.messages = MessagesDAO.db.list();
+    messages = MessagesDAO.db.list();
     //notifyListeners();
   }
 
-  void isCheckedRefresh(MessagesDTO dto) {
-    dto.isChecked = !dto.isChecked;
-    notifyListeners();
-  }
-  
   void removeAll(List<int> list){
     MessagesDAO.db.delete(list);
-    this.messages = MessagesDAO.db.list();
+    messages = MessagesDAO.db.list();
     //notifyListeners();
   }
+
+  void deleteBySeq(List<int> delete_list) {
+    MessagesDAO.db.delete(delete_list);
+    notifyListeners();
+  }
+
+
+
+
 
 
 
@@ -49,25 +73,7 @@ class MainAcitivityProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  bool get deleteMode => _deleteMode;
 
-  set deleteMode(bool value) {
-    _deleteMode = value;
-    notifyListeners();
-  }
-
-  void deleteBySeq(List<int> delete_list) {
-    MessagesDAO.db.delete(delete_list);
-    notifyListeners();
-  }
-
-  void setAllIsChecked(bool bool) {
-    this.messages.then((list){
-      list.forEach((e) {
-        e.isChecked=bool;
-      });
-    });
-  }
 
 
 

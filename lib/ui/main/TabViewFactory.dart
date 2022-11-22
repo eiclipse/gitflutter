@@ -15,21 +15,21 @@ import '../../providers/MainActivityProvider.dart';
 class TabViewFactory with ChangeNotifier{
 
   // PAPAGO Related
-   final TextEditingController _fromMessageController = TextEditingController();
+  final TextEditingController _fromMessageController = TextEditingController();
 
   // DB_Insert Related
-   final TextEditingController _messageController = TextEditingController();
-   final TextEditingController _writerController = TextEditingController();
-   final FocusNode _writerFocusNode = FocusNode();
+  final TextEditingController _messageController = TextEditingController();
+  final TextEditingController _writerController = TextEditingController();
+  final FocusNode _writerFocusNode = FocusNode();
 
   // prevent spam filter
-   int i = 1;
+  int i = 1;
 
-   getTextTabView(String str){
+  getTextTabView(String str){
     return Text(str);
   }
 
-   getUITabView(){
+  getUITabView(){
     return ListView(
       children: [
         Container(                    // Vertical ListView 의 첫번째 아이템 : CarouselSlider
@@ -75,7 +75,7 @@ class TabViewFactory with ChangeNotifier{
     );
   }
 
-   getPapagoTabView(BuildContext context){
+  getPapagoTabView(BuildContext context){
     var data = Provider.of<MainAcitivityProvider>(context);
     return Column(
       children: [
@@ -265,7 +265,7 @@ class TabViewFactory with ChangeNotifier{
     );
   }
 
-   get_DBInsert_TabView(BuildContext context){
+  get_DBInsert_TabView(BuildContext context){
     var data = Provider.of<MainAcitivityProvider>(context);
     return Column(
       children: [
@@ -359,10 +359,10 @@ class TabViewFactory with ChangeNotifier{
     );
   }
 
-   get_DBList_TabView(BuildContext context){
+  get_DBList_TabView(BuildContext context){
     var data = Provider.of<MainAcitivityProvider>(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 8.0, 8.0, 8.0),
+      padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 0),
       child: Column(
         children: [
           Container(
@@ -387,9 +387,7 @@ class TabViewFactory with ChangeNotifier{
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           onLongPress: (){
-                            if(data.deleteMode){
-                              data.deleteMode = false;
-                            }else{
+                            if(!data.deleteMode){
                               data.deleteMode = true;
                             }
                           },
@@ -402,13 +400,22 @@ class TabViewFactory with ChangeNotifier{
                                     minLeadingWidth: 0,
                                     horizontalTitleGap: 0,
                                     contentPadding: EdgeInsets.all(0),
-                                    leading: data.deleteMode ?
-                                    Checkbox(
-                                        value: snapshot.data![index].isChecked,
-                                        onChanged: (bool? value) {
-                                          print("${snapshot.data![index].isChecked} : ${i++}");
-                                          data.isCheckedRefresh(snapshot.data![index]);
-                                        }) : Container(width:0),
+                                    leading: AnimatedContainer(
+                                      width:data.deleteMode?40:0,
+                                      duration: const Duration(milliseconds: 200),
+                                      child: data.deleteMode?
+                                      AnimatedScale(
+                                        duration: Duration(milliseconds: 1000),
+                                        scale: data.deleteMode?1:0,
+                                        child: Checkbox(
+                                            shape:const CircleBorder(),
+                                            value: snapshot.data![index].isChecked,
+                                            onChanged: (bool? value) {
+                                              print("${snapshot.data![index].isChecked} : ${i++}");
+                                              data.isCheckedRefresh(snapshot.data![index]);
+                                            }),
+                                      ):Container(),
+                                    ),
                                     title:SizedBox(
                                         width: double.infinity,
                                         child: Text(
@@ -443,46 +450,51 @@ class TabViewFactory with ChangeNotifier{
                 }
             ),
           ),
-          Container(
-            width:double.infinity,
-            decoration: BoxDecoration(
-                border: Border.all(width:1,color:Colors.grey)
-            ),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            width:MediaQuery.of(context).size.width,
             height:data.deleteMode?60:0,
-            child: Row(
-              children: [
-                data.deleteMode?Expanded(
-                  child: TextButton.icon(
-                      icon: Icon(Icons.close),
-                      label: Text("취소"),
-                      onPressed: (){
-                        data.deleteMode=false;
-                        data.setAllIsChecked(false);
-                      }
-                  ),
-                ):Container(),
-                data.deleteMode?Expanded(
-                  child: TextButton.icon(
-                      style: TextButton.styleFrom(
-                        primary: Colors.blue,
-                      ),
-                      icon: Icon(Icons.delete_forever),
-                      label: Text("삭제"),
-                      onPressed: (){
-                        data.messages.then((value){
-                          List<int> del_list = [];
-                          value.forEach((e) {
-                            if(e.isChecked){
-                              del_list.add(e.seq);
-                            }
-                          });
-                          data.removeAll(del_list);
+            child: Container(
+
+              decoration: BoxDecoration(
+                  border: Border.all(width:1,color:Colors.grey)
+              ),
+
+              child: Row(
+                children: [
+                  data.deleteMode?Expanded(
+                    child: TextButton.icon(
+                        icon: Icon(Icons.close),
+                        label: Text("취소"),
+                        onPressed: (){
                           data.deleteMode=false;
-                        });
-                      }
-                  ),
-                ):Container()
-              ],
+                          data.setAllIsChecked(false);
+                        }
+                    ),
+                  ):Container(),
+                  data.deleteMode?Expanded(
+                    child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          primary: Colors.blue,
+                        ),
+                        icon: Icon(Icons.delete_forever),
+                        label: Text("삭제"),
+                        onPressed: (){
+                          data.messages.then((value){
+                            List<int> del_list = [];
+                            value.forEach((e) {
+                              if(e.isChecked){
+                                del_list.add(e.seq);
+                              }
+                            });
+                            data.removeAll(del_list);
+                            data.deleteMode=false;
+                          });
+                        }
+                    ),
+                  ):Container()
+                ],
+              ),
             ),
           )
         ],
