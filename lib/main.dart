@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import './dummy_data.dart';
 import './pages/filters_page.dart';
 import './pages/tabs_page.dart';
+import './pages/favorite_page.dart';
 import './pages/category_meals_page.dart';
 import './pages/categories_page.dart';
 import './pages/meal_detail_page.dart';
@@ -38,8 +39,21 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _addFavorite(){
+  void _toggleFavorite(String itemId){
+    final index = _favoriteMeals.indexWhere((item) => item.id == itemId);
+    if(index >= 0) {
+      setState(() {
+        _favoriteMeals.removeAt(index);
+      });
+    }else{
+      setState(() {
+        _favoriteMeals.add(DUMMY_MEALS.firstWhere((item) => item.id == itemId));
+      });
+    }
+  }
 
+  bool _isFavorite(String itemId){
+    return _favoriteMeals.any((item) => item.id == itemId);
   }
 
   @override
@@ -76,10 +90,10 @@ class _MyAppState extends State<MyApp> {
       그럼 각 페이지가 필요한 위젯에서 Navigator pushNamed 를 이용해
       등록된 라우터를 불러주면 됨.
       */
-          '/': (_) => TabsPage(),
+          '/': (_) => TabsPage(_favoriteMeals),
           // web처럼 / 는 첫 앱 화면 default 로 잡혀있음
           CategoryMealsPage.routeName: (_) => CategoryMealsPage(_categoryMeals),
-          MealDetail.routeName: (_) => MealDetail(),
+          MealDetail.routeName: (_) => MealDetail(_isFavorite, _toggleFavorite),
           FiltersPage.routeName: (_) => FiltersPage(_filter, _setFilter),
         },
         // 어떤 페이지에도 도달하지 못했을 때 default 값. 에러페이지용으로도 많이 쓰임.
